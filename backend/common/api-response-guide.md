@@ -7,10 +7,16 @@
 ### 1. 성공 응답 구조
 
 ```typescript
-export interface ISuccessResponse<T> {
+export type ISuccessResponse<T> = {
   success: true;
+  statusCode: number;
   data: T;
-}
+};
+
+export type ISuccessResponseWithoutData = {
+  success: true;
+  statusCode: number;
+};
 ```
 
 **예시:**
@@ -18,6 +24,7 @@ export interface ISuccessResponse<T> {
 ```json
 {
   "success": true,
+  "statusCode": 200,
   "data": {
     "id": 1,
     "name": "User One",
@@ -32,6 +39,7 @@ export interface ISuccessResponse<T> {
 ```typescript
 export interface IErrorResponse {
   success: false;
+  statusCode: number;
   error: {
     code: string;
     message: string;
@@ -44,6 +52,7 @@ export interface IErrorResponse {
 ```json
 {
   "success": false,
+  "statusCode": 400,
   "error": {
     "code": "USER_NOT_FOUND",
     "message": "사용자를 찾을 수 없습니다."
@@ -56,21 +65,41 @@ export interface IErrorResponse {
 반복적인 응답 처리를 줄이기 위해 `utils/api-response.ts`에 공통 응답 함수를 정의한다.
 
 ```typescript
-export function successResponse<T>(data: T): ISuccessResponse<T> {
-  return {
-    success: true,
-    data,
-  };
+export function successResponse<T>(
+  data: T,
+  statusCode: HttpStatus = HttpStatus.OK,
+): ISuccessResponse<T>;
+
+export function successResponse(
+  data: undefined,
+  statusCode: HttpStatus.NO_CONTENT,
+): ISuccessResponseWithoutData;
+
+export function successResponse<T>(
+  data?: T,
+  statusCode: HttpStatus = HttpStatus.OK,
+): ISuccessResponse<T> | ISuccessResponseWithoutData {
+  if (statusCode === HttpStatus.NO_CONTENT) {
+    return { success: true, statusCode };
+  }
+  return { success: true, statusCode, data: data as T };
 }
 
-export function errorResponse(code: string, message: string): IErrorResponse {
-  return {
-    success: false,
-    error: {
-      code,
-      message,
+export function errorResponse(
+  errorKey: keyof typeof ERROR_CODES,
+  statusCode: HttpStatus = HttpStatus.BAD_REQUEST,
+): never {
+  throw new HttpException(
+    {
+      success: false,
+      statusCode,
+      error: {
+        code: ERROR_CODES[errorKey],
+        message: ERROR_MESSAGES[errorKey],
+      },
     },
-  };
+    statusCode,
+  );
 }
 ```
 
@@ -82,7 +111,7 @@ export function errorResponse(code: string, message: string): IErrorResponse {
 async findOneById(id: number): Promise<ISuccessResponse<User> | IErrorResponse> {
   const user = await this.usersRepository.findOne({ where: { id } });
   if (!user) {
-    return errorResponse('USER_NOT_FOUND', '사용자를 찾을 수 없습니다.');
+    return errorResponse('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
   }
   return successResponse(user);
 }
@@ -100,6 +129,8 @@ async getUser(@Param('id') id: number) {
 ## ✅ 정리
 
 - **모든 응답은 `successResponse()`와 `errorResponse()` 사용하여 일관성 유지**
-- **성공 시 `success: true, data` 반환**
-- **실패 시 `success: false, error: { code, message }` 반환**
+- **성공 시 `success: true, statusCode, data` 반환**
+- **실패 시 `success: false, statusCode, error: { code, message }` 반환**
 - **프론트엔드에서는 `error.code`를 기반으로 메시지 처리 가능**
+
+---
