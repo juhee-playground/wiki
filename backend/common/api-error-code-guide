@@ -31,6 +31,7 @@ API에서 발생하는 에러 코드는 **900번대 이상**을 사용하며, �
 ```json
 {
   "success": false,
+  "statusCode": 401,
   "error": {
     "code": 910,
     "message": "User not found."
@@ -41,13 +42,7 @@ API에서 발생하는 에러 코드는 **900번대 이상**을 사용하며, �
 ### ✅ **NestJS에서 에러 코드 반환 예제**
 
 ```typescript
-import { UnauthorizedException } from "@nestjs/common";
-import { ERROR_CODES, ERROR_MESSAGES } from "src/constants/error";
-
-throw new UnauthorizedException({
-  code: ERROR_CODES.UNAUTHORIZED,
-  message: ERROR_MESSAGES.UNAUTHORIZED,
-});
+throw errorResponse('USER_NOT_FOUND', HttpStatus.UNAUTHORIZED);
 ```
 
 ### ✅ **에러 코드 추가 시 유의사항**
@@ -66,15 +61,5 @@ throw new UnauthorizedException({
 2️⃣ 기존 코드 체계를 참고하여 적절한 `ERROR_CODES`와 `ERROR_MESSAGES`를 추가합니다.  
 3️⃣ 관련 API 서비스에서 추가한 에러 코드를 적용합니다.  
 4️⃣ API 응답을 테스트하여 정상적으로 동작하는지 확인합니다.
-
-### ❓ **에러 메시지를 다국어로 지원하려면 어떻게 해야 하나요?**
-
-- 서버에서는 기본적으로 **영어 메시지**를 반환하고,
-- 클라이언트에서 에러 코드를 기반으로 다국어 매핑하여 처리하는 방식을 권장합니다.
-- 예를 들어, 프런트엔드에서 `ERROR_CODES.USER_NOT_FOUND`를 감지하면,
-  - 🇰🇷 "사용자를 찾을 수 없습니다."
-  - 🇺🇸 "User not found."
-  - 🇯🇵 "ユーザーが見つかりません。"  
-    같은 방식으로 번역하여 표시할 수 있습니다.
 
 ---
