@@ -56,3 +56,9 @@ const { logIn, isAuthenticated } = useAuthStore(
 ✅ **Zustand 내부의 상태 변경이 많아질 경우, 구조 분해 할당은 피하는 것이 좋음**
 
 ---
+
+## 📌 **추가 참고 링크**
+- [Zustand 공식 문서](https://docs.pmnd.rs/zustand/getting-started/introduction)
+- [React 공식 문서: Invalid Hook Call](https://react.dev/learn/preserving-and-resetting-state)
+
+---
