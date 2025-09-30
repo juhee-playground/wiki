@@ -4,7 +4,7 @@
 ## ✅ 해결 효과
 
 ### 1. **문제 해결**
-- ✅ FileAttachmentsPopover가 다른 TaskCard 밑으로 깔리지 않음
+- ✅ Popover가 다른 Card 밑으로 깔리지 않음
 - ✅ 드래그 중인 카드가 있어도 popover가 정상 표시
 - ✅ z-index 충돌 완전 해결
 
