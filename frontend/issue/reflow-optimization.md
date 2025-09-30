@@ -34,7 +34,7 @@
 
 **문제 코드:**
 ```typescript
-// useTaskCardDrag.ts, useTaskBlockDrag.ts
+// useCardDrag.ts, useBoxDrag.ts
 dragCardRef.current.style.transform = `translate(${translateX}px, ${translateY}px)`;
 dragCardRef.current.style.zIndex = '50';
 dragCardRef.current.style.opacity = '0.8';
@@ -55,16 +55,16 @@ dragCardRef.current.style.transition = 'none';
 
 **문제 코드:**
 ```typescript
-// useGridScrollSync.ts
-const handleGridScroll = useCallback(() => {
+// useTableScrollSync.ts
+const handleTableScroll = useCallback(() => {
   if (headerScrollRef.current) {
     headerScrollRef.current.scrollLeft = scrollLeft; // 리플로우
   }
-  if (leftTimeRef.current) {
-    leftTimeRef.current.scrollTop = currentScrollTop; // 리플로우
+  if (timeRef.current) {
+    timeRef.current.scrollTop = currentScrollTop; // 리플로우
   }
-  if (roadmapsRef.current) {
-    roadmapsRef.current.scrollTop = currentScrollTop; // 리플로우
+  if (datesRef.current) {
+    datesRef.current.scrollTop = currentScrollTop; // 리플로우
   }
 }, []);
 ```
@@ -102,8 +102,8 @@ const cardRect = cardElement.getBoundingClientRect();
 
 **문제 코드:**
 ```typescript
-// TaskCardContainer.tsx
-document.body.style.cursor = isThisCardDragging || isResizing ? 'grabbing' : '';
+// CardContainer.tsx
+document.body.style.cursor = isCardDragging || isResizing ? 'grabbing' : '';
 ```
 
 **왜 문제인가?**
@@ -179,10 +179,10 @@ const useOptimizedScrollSync = () => {
         headerScrollRef.current.scrollLeft = scrollLeft;
       }
       if (leftTimeRef.current) {
-        leftTimeRef.current.scrollTop = scrollTop;
+        timeRef.current.scrollTop = scrollTop;
       }
       if (roadmapsRef.current) {
-        roadmapsRef.current.scrollTop = scrollTop;
+        datesRef.current.scrollTop = scrollTop;
       }
     });
   }, []);
@@ -246,7 +246,7 @@ const useCachedBoundingRect = (element: HTMLElement | null) => {
 
 // 컴포넌트에서 클래스 토글
 useEffect(() => {
-  if (isThisCardDragging || isResizing) {
+  if (isCardDragging || isResizing) {
     document.body.classList.add('dragging');
   } else {
     document.body.classList.remove('dragging');
@@ -255,7 +255,7 @@ useEffect(() => {
   return () => {
     document.body.classList.remove('dragging');
   };
-}, [isThisCardDragging, isResizing]);
+}, [isCardDragging, isResizing]);
 ```
 
 **성능 개선 효과:**
@@ -340,12 +340,12 @@ const useOptimizedDrag = () => {
 
 ```typescript
 // 기존 코드 (문제)
-const handleGridScroll = () => {
+const handleTableScroll = () => {
   if (headerScrollRef.current) {
     headerScrollRef.current.scrollLeft = scrollLeft;
   }
-  if (leftTimeRef.current) {
-    leftTimeRef.current.scrollTop = scrollTop;
+  if (timeRef.current) {
+    timeRef.current.scrollTop = scrollTop;
   }
 };
 
@@ -365,8 +365,8 @@ const useOptimizedScrollSync = () => {
       if (headerScrollRef.current) {
         headerScrollRef.current.scrollLeft = scrollLeft;
       }
-      if (leftTimeRef.current) {
-        leftTimeRef.current.scrollTop = scrollTop;
+      if (timeRef.current) {
+        timeRef.current.scrollTop = scrollTop;
       }
     });
   }, []);
